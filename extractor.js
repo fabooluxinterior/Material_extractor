@@ -231,13 +231,18 @@ function buildReport(rooms, lamDict) {
     if (room.categories.length === 0) return;
     out.push({
       name: room.name,
-      rows: room.categories.map(c => ({
-        product: c.count > 1 ? `${c.name} (Qty: ${c.count})` : c.name,
-        carcassMaterial: c.cMat,
-        shutterMaterial: c.sMat,
-        carcass: getLaminateDetails(c.cFin, lamDict),
-        shutter: getLaminateDetails(c.sFin, lamDict)
-      }))
+      rows: room.categories.map(c => {
+        // Glass cabinets: the shutter finish is left empty on purpose; the user picks the glass type on the page.
+        const isGlass = c.key.indexOf('glass') !== -1;
+        return {
+          product: c.count > 1 ? `${c.name} (Qty: ${c.count})` : c.name,
+          glass: isGlass,
+          carcassMaterial: c.cMat,
+          shutterMaterial: c.sMat,
+          carcass: getLaminateDetails(c.cFin, lamDict),
+          shutter: isGlass ? { name: '', type: '', code: '', edge: '', lines: [], image: '' } : getLaminateDetails(c.sFin, lamDict)
+        };
+      })
     });
   });
   return out;

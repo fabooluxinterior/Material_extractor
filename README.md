@@ -14,8 +14,13 @@ and nothing is ever written to Google Sheets.
 - **Upload** the estimate Excel: one card per room, with finish name, code, edge band and a dotted-border swatch.
 - **+ Add Manual Item** (under each room): adds an editable row (product, materials, finish name/code, **+ Image** to attach a photo). Press **Done** to lock it in, **Delete Row** to remove it.
   Manual items are kept in the browser only and stay in place when the sheet auto-syncs.
-- **Print PDF**: opens the print dialog already set to **A4 landscape**, one room per page, clean black-and-white layout.
-  Choose **Save as PDF** as the destination (the file is named after the project).
+- **Glass cabinets** (any cabinet with "glass" in its name): the shutter finish starts empty. Type your own text, or use the dropdown on the image slot
+  (Fluted Glass, Black Tinted Glass, Grey Tinted Glass, Clear Glass, Brown Tinted Glass) to fill in the image and name automatically.
+  The five images are in the `glass/` folder (`fluted.jpg`, `black.jpg`, `grey.jpg`, `clear.jpg`, `brown.jpg`).
+  To use real photos, replace those files with your own square images using the same names.
+- **Print PDF**: builds the PDF inside the page and downloads it straight away: **A4 landscape**, upright, one room per page
+  (long rooms continue on the next page), no browser date/URL headers. The file is named after the project.
+  Swatch images are copied into the PDF; if Google blocks one, it is left as an empty dotted box and the page tells you.
 
 ## One-time setup (about 5 minutes)
 
