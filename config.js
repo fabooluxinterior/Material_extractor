@@ -1,5 +1,5 @@
 // Same rules as the original Apps Script CONFIG.
-module.exports = {
+const FB_DATA = {
   BLOCKER_HEADERS: ["accessories", "accesories", "hardware", "appliances", "others"],
   ACCESSORY_ITEMS: ["hettich", "pull-out", "tandem", "basket", "hinge", "slide", "handle", "fitting", "channel", "pantry", "magic corner", "drawer system"],
   IGNORED_ITEMS: ["cove lighting", "support panel", "modesty", "don't use", "skirting", "test", "fluted", "mirror", "upholstery", "dishwasher", "frame and shutter", "duct", "frame work", "pelmet", "groove", "filler", "raw wpc"],
@@ -41,3 +41,5 @@ module.exports = {
     { key: 'tall', name: 'Tall Units', isCabinet: true, codes: ['TU'], keywords: ['tall', 'tall unit'] }
   ]
 };
+if (typeof module !== 'undefined' && module.exports) module.exports = FB_DATA;
+else globalThis.FB_CONFIG = FB_DATA;

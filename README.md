@@ -1,48 +1,42 @@
-# Faboolux Materials Extractor (server-side, live sheet sync)
+# Faboolux Materials Extractor (no server)
 
-Upload an estimate Excel and get the materials back instantly. The server **only reads** your
-database Google Sheet. It never writes to Google Sheets, and nothing is saved to disk.
+A static web page. Drop an estimate Excel and the materials table appears instantly.
+Everything runs **inside the browser**: there is no server, nothing is uploaded or saved,
+and nothing is ever written to Google Sheets.
 
-## How the data flows
-- The database sheet (`Cabinet_Data`, `Laminate_Data`, `masterdata`) is downloaded and kept in memory.
-- It is re-checked every **60 s** in the background, so any edit you make in the sheet appears automatically.
-- Uploads never wait for Google: they read the in-memory copy, so results are near-instant.
-- If Google is unreachable, the last good copy keeps being used (no data loss, no downtime).
-- Each upload also kicks off a background re-check if the last one is older than 10 s.
+## How the data stays in sync
+- The page **reads** your database Google Sheet (`Cabinet_Data`, `Laminate_Data`, `masterdata`) with a read-only Google key.
+- It re-checks the sheet **every 60 seconds**, whenever you switch back to the tab, and when you press **Sync now**.
+- If something changed in the sheet, the data updates and **the estimate you already uploaded is re-processed automatically**.
+- The last copy is saved in your browser, so the page starts instantly and still works if Google is briefly unreachable.
 
-## Setup
-1. In the database Google Sheet: **Share -> General access -> Anyone with the link -> Viewer**
-   (needed so the server can read it without logins; the sheet stays read-only to others).
-2. `npm install`
-3. `npm start` and open http://localhost:3000
+## One-time setup (about 5 minutes)
 
-Optional environment variables:
-| Variable | Default | Meaning |
-|---|---|---|
-| `DATABASE_SHEET_ID` | your database sheet ID | Sheet to read |
-| `SYNC_INTERVAL_MS` | `60000` | Background sync interval |
-| `REFRESH_TOKEN` | none | If set, `/api/refresh` needs `?token=...` |
-| `DB_PATH` | none | Read a local .xlsx instead of Google (offline use) |
-| `PORT` | `3000` | Server port |
+### 1. Share the database sheet (read-only)
+Google Sheet -> **Share** -> General access -> **Anyone with the link** -> **Viewer**.
 
-## Truly instant updates (optional)
-The "Sync now" button in the page forces an immediate re-read. To make the sheet push changes the
-moment someone edits it, add this to the **database sheet's** Apps Script
-(Extensions -> Apps Script), then add an installable trigger: Triggers -> Add -> `onSheetEdit` -> From spreadsheet -> On edit.
-It only pings your server; it reads and writes nothing.
+### 2. Create a read-only Google API key
+1. Open https://console.cloud.google.com/ and create a project (any name).
+2. **APIs & Services -> Library -> "Google Sheets API" -> Enable.**
+3. **APIs & Services -> Credentials -> Create credentials -> API key.**
+4. Click the key -> **Restrict key**:
+   - *Websites (HTTP referrers)*: add `https://fabooluxinterior.github.io/*`
+     (and `http://localhost:*` if you want to test locally)
+   - *API restrictions*: **Restrict key -> Google Sheets API**
+5. Copy the key and paste it into `settings.js` as `API_KEY`, then commit.
 
-```js
-const SERVER_URL = 'https://YOUR-SERVER/api/refresh?token=YOUR_TOKEN';
-function onSheetEdit() {
-  try { UrlFetchApp.fetch(SERVER_URL, { muteHttpExceptions: true }); } catch (e) {}
-}
-```
-This needs the server to be reachable from the internet (e.g. deployed on Render/Railway/a VPS).
-On a local PC, rely on the 60 s sync plus the "Sync now" button.
+The key can only *read* sheets that are shared with a link, and only when called from your website,
+so it is safe to keep in the repository.
+
+### 3. Publish the page on GitHub Pages (free)
+Repository -> **Settings -> Pages -> Build and deployment -> Source: Deploy from a branch ->
+Branch: `main`, folder `/ (root)` -> Save.**
+After a minute the app is live at https://fabooluxinterior.github.io/Material_extractor/
 
 ## Files
-- `config.js`    – categories and keyword rules (unchanged from the Apps Script)
-- `extractor.js` – extraction logic (ported 1:1)
-- `db.js`        – read-only live sheet mirror (in-memory, background sync)
-- `server.js`    – Express API: `POST /api/extract`, `GET /api/health`, `/api/refresh`
-- `public/index.html` – upload UI with sync status
+- `index.html`   - the page
+- `app.js`       - upload, rendering, auto re-processing
+- `sheet.js`     - read-only live sheet sync (60 s, on focus, on demand)
+- `extractor.js` - extraction rules, ported 1:1 from the Apps Script
+- `config.js`    - categories and keyword rules
+- `settings.js`  - sheet ID, API key, sync interval

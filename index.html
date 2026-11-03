@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faboolux Materials Extractor</title>
+<style>
+  :root { --bg:#f6f7fb; --card:#fff; --ink:#1f2430; --muted:#6b7280; --brand:#1967d2; --line:#d9dde7; --red:#d93025; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:var(--card); border-bottom:1px solid var(--line); padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  header h1 { margin:0; font-size:18px; }
+  main { max-width:1100px; margin:24px auto; padding:0 16px; }
+  #drop { background:var(--card); border:2px dashed var(--line); border-radius:12px; padding:40px 20px; text-align:center; cursor:pointer; transition:.15s; }
+  #drop.over, #drop:hover { border-color:var(--brand); background:#eef4ff; }
+  #drop p { margin:6px 0; color:var(--muted); }
+  #drop strong { color:var(--ink); font-size:16px; }
+  #status { margin:16px 0; font-size:14px; min-height:20px; }
+  #status.err { color:var(--red); font-weight:600; }
+  .toolbar { display:flex; gap:10px; align-items:center; margin-bottom:12px; }
+  .toolbar h2 { margin:0; font-size:16px; flex:1; }
+  button { background:var(--brand); color:#fff; border:0; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:13px; }
+  button.secondary { background:#fff; color:var(--brand); border:1px solid var(--brand); }
+  .room { background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:18px; overflow:auto; }
+  .room h3 { margin:0; padding:10px 14px; background:#e8f0fe; color:#1967d2; font-size:15px; }
+  table { width:100%; border-collapse:collapse; }
+  th { background:#f3f3f3; font-size:13px; }
+  th, td { border:1px solid var(--line); padding:8px; text-align:center; vertical-align:middle; font-size:13px; }
+  td.finish { white-space:pre-line; width:150px; }
+  td.img { width:100px; }
+  td.img img { width:84px; height:84px; object-fit:cover; border-radius:6px; display:block; margin:auto; }
+  .fill { background:var(--red); color:#fff; font-weight:700; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Faboolux Materials Extractor</h1>
+  <span style="display:flex;gap:10px;align-items:center">
+    <span id="dbinfo" style="font-size:12px;color:var(--muted)"></span>
+    <button class="secondary" id="syncBtn">Sync now</button>
+  </span>
+</header>
+<main>
+  <div id="drop">
+    <strong>Drop the estimate Excel here, or click to browse</strong>
+    <p>.xlsx / .xls &mdash; processed inside your browser. Nothing is uploaded, saved, or written to any sheet.</p>
+    <input id="file" type="file" accept=".xlsx,.xls,.xlsm" hidden>
+  </div>
+  <div id="status"></div>
+  <div id="result"></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="settings.js"></script>
+<script src="config.js"></script>
+<script src="extractor.js"></script>
+<script src="sheet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 // Direct port of the Apps Script extraction rules. Pure functions, no I/O.
-const CONFIG = require('./config');
+const CONFIG = (typeof module !== 'undefined' && module.exports) ? require('./config') : globalThis.FB_CONFIG;
 
 const catByKey = new Map(CONFIG.CATEGORIES.map(c => [c.key, c]));
 const catIndex = new Map(CONFIG.CATEGORIES.map((c, i) => [c.key, i]));
@@ -247,4 +247,5 @@ function processMatrix(dataMatrix, db) {
   return { projectName: extractProjectName(dataMatrix), rooms: buildReport(rooms, db.laminates) };
 }
 
-module.exports = { processMatrix };
+if (typeof module !== 'undefined' && module.exports) module.exports = { processMatrix };
+else globalThis.FB_extractor = { processMatrix };
