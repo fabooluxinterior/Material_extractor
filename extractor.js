@@ -198,14 +198,19 @@ function getLaminateDetails(finish, dict) {
   const key = finish.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
   if (key.includes('fillmanually') || finish.trim() === 'Glass') return { lines: [finish.trim()], image: '' };
 
-  const res = { lines: [finish.trim()], image: '' };
+  const res = { name: finish.trim(), type: '', code: '', edge: '', lines: [finish.trim()], image: '' };
   const entry = dict[key];
   if (entry) {
     let baseName = finish.replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ').trim();
+    res.name = baseName;
+    res.type = entry.type || '';
     if (entry.type) baseName += ' (' + entry.type + ')';
     const lines = [baseName];
-    if (entry.code) lines.push(entry.code);
-    if (entry.edgeBand) lines.push(entry.edgeBand.toLowerCase().startsWith('edge band') ? entry.edgeBand : 'Edge Band: ' + entry.edgeBand);
+    if (entry.code) { res.code = entry.code; lines.push(entry.code); }
+    if (entry.edgeBand) {
+      res.edge = entry.edgeBand.replace(/^edge band:?\s*/i, '');
+      lines.push(entry.edgeBand.toLowerCase().startsWith('edge band') ? entry.edgeBand : 'Edge Band: ' + entry.edgeBand);
+    }
     res.lines = lines;
 
     if (entry.url) {

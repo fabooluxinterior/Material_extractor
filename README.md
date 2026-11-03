@@ -10,6 +10,13 @@ and nothing is ever written to Google Sheets.
 - If something changed in the sheet, the data updates and **the estimate you already uploaded is re-processed automatically**.
 - The last copy is saved in your browser, so the page starts instantly and still works if Google is briefly unreachable.
 
+## Using it
+- **Upload** the estimate Excel: one card per room, with finish name, code, edge band and a dotted-border swatch.
+- **+ Add Manual Item** (under each room): adds an editable row (product, materials, finish name/code, **+ Image** to attach a photo). Press **Done** to lock it in, **Delete Row** to remove it.
+  Manual items are kept in the browser only and stay in place when the sheet auto-syncs.
+- **Print PDF**: opens the print dialog already set to **A4 landscape**, one room per page, clean black-and-white layout.
+  Choose **Save as PDF** as the destination (the file is named after the project).
+
 ## One-time setup (about 5 minutes)
 
 ### 1. Share the database sheet (read-only)
