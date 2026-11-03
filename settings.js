@@ -4,7 +4,7 @@ globalThis.FB_SETTINGS = {
   SHEET_ID: '1gGptlk5dUXouGZT_mOlXu8xGzKmmrCGRSLjoDlO6ISM',
 
   // Read-only Google API key, restricted to this website (see README). Paste it between the quotes.
-  API_KEY: '',
+  API_KEY: 'AIzaSyDMcWskrT6lxor638esfq1WlE1cH5lb22M',
 
   // How often the page re-checks the sheet for changes (milliseconds). 60000 = 1 minute.
   SYNC_MS: 60000
