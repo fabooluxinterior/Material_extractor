@@ -12,23 +12,42 @@
   * { box-sizing:border-box; }
   body { margin:0; background:#000; color:var(--ink); font-family:'Outfit',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .shell { max-width:1280px; margin:14px auto; background:#131419; border:1px solid #1d1e24; border-radius:30px; padding:40px; }
+  .shell:not(.has-results) { max-width:730px; margin-top:28px; padding:40px 40px 44px; }
+  .has-results .only-upload { display:none !important; }
+  .shell:not(.has-results) .only-results { display:none !important; }
+  [hidden] { display:none !important; }
+  button { font-family:inherit; cursor:pointer; }
+
+  /* ---------- upload screen ---------- */
+  .up-head { text-align:center; }
+  .pill { display:inline-block; padding:7px 18px; border:1px solid #3a2a22; color:var(--orange); background:rgba(232,84,30,.07); border-radius:999px; font-size:11.5px; font-weight:600; letter-spacing:.1em; }
+  .up-head h1 { margin:18px 0 6px; font-size:25px; font-weight:700; color:#fff; letter-spacing:-.01em; }
+  .up-head p { margin:0; font-size:14px; color:var(--muted); }
+  #drop { margin-top:26px; min-height:210px; background:#0d0e11; border:2px dashed #3a3b42; border-radius:22px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; cursor:pointer; transition:.15s; padding:30px 20px; }
+  #drop.over, #drop:hover { border-color:var(--orange); background:rgba(232,84,30,.04); }
+  #drop .ficon { color:#6b7280; }
+  .btn-choose { display:inline-flex; align-items:center; gap:10px; background:#fff; color:#111; border-radius:12px; padding:14px 28px; font-size:15px; font-weight:600; }
+  .faq { margin-top:26px; border:1px solid var(--line); border-radius:14px; background:#17181d; overflow:hidden; }
+  .faq details + details { border-top:1px solid var(--line); }
+  .faq summary { list-style:none; display:flex; justify-content:space-between; align-items:center; padding:18px 22px; font-size:13.5px; font-weight:700; color:#fff; cursor:pointer; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary::after { content:'+'; color:var(--orange); font-size:18px; font-weight:600; }
+  .faq details[open] summary::after { content:'\2212'; }
+  .faq details[open] summary { border-bottom:1px dashed #33343c; }
+  .faq .body { padding:18px 22px; font-size:13.5px; line-height:1.65; color:var(--muted); }
+
+  /* ---------- results screen ---------- */
   header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
   .tag { display:inline-block; padding:6px 16px; border:1px solid var(--green); color:var(--green); background:rgba(16,185,129,.08); border-radius:999px; font-size:11.5px; font-weight:600; letter-spacing:.09em; }
-  h1 { margin:12px 0 0; font-size:30px; font-weight:700; color:#fff; letter-spacing:-.01em; }
+  header h1 { margin:12px 0 0; font-size:30px; font-weight:700; color:#fff; letter-spacing:-.01em; }
   .head-right { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-  .sync { margin-top:10px; font-size:12px; color:var(--muted); display:flex; gap:10px; align-items:center; }
-  .linkbtn { background:none; border:0; color:var(--green); cursor:pointer; font:inherit; padding:0; text-decoration:underline; }
-  button { font-family:inherit; cursor:pointer; }
   .btn-white { background:#fff; color:#111; border:0; border-radius:10px; padding:11px 20px; font-size:14px; font-weight:600; display:inline-flex; align-items:center; gap:8px; }
   .btn-dark { background:#1f2026; color:var(--ink); border:1px solid #2c2d35; border-radius:10px; padding:11px 18px; font-size:14px; font-weight:500; }
-  [hidden] { display:none !important; }
-
-  #drop { margin-top:28px; border:2px dashed #2c2d35; border-radius:18px; padding:54px 20px; text-align:center; color:var(--muted); cursor:pointer; transition:.15s; }
-  #drop.over, #drop:hover { border-color:var(--orange); background:rgba(232,84,30,.05); }
-  #drop strong { color:#fff; font-size:17px; font-weight:600; }
-  #drop p { margin:8px 0 0; font-size:13px; }
-  #status { margin:18px 0 0; font-size:13.5px; color:var(--muted); min-height:18px; }
+  #status { margin:18px 0 0; font-size:13.5px; color:var(--muted); min-height:18px; text-align:center; }
+  .has-results #status { text-align:left; }
   #status.err { color:#f87171; font-weight:600; }
+  .sync { margin:22px auto 0; font-size:12px; color:var(--muted); display:flex; gap:10px; align-items:center; justify-content:center; }
+  .linkbtn { background:none; border:0; color:var(--green); cursor:pointer; font:inherit; padding:0; text-decoration:underline; }
 
   .room { margin-top:30px; background:#17181d; border:1px solid var(--line); border-radius:20px; overflow:hidden; }
   .room-head { background:#0f1014; color:var(--orange); font-weight:700; font-size:17px; padding:18px 22px; border-bottom:1px solid var(--line); }
@@ -62,16 +81,21 @@
   .imgbox img { width:100%; height:100%; object-fit:cover; }
   .imgbox .rm { position:absolute; top:3px; right:3px; width:18px; height:18px; border-radius:50%; background:rgba(0,0,0,.7); color:#fff; font-size:11px; line-height:18px; text-align:center; }
 
+  @media (max-width:640px) {
+    .shell, .shell:not(.has-results) { margin:0; border-radius:0; padding:22px 14px; }
+    .room { overflow-x:auto; } table { min-width:760px; }
+  }
+
   /* ---------- PDF / print: A4 landscape, one room per page ---------- */
   @page { size: A4 landscape; margin: 10mm; }
   @media print {
     html, body { background:#fff !important; color:#000 !important; }
-    .shell { max-width:none; margin:0; padding:0; background:#fff; border:0; border-radius:0; }
-    .no-print, header, #drop, #status, .sync { display:none !important; }
-    .room { margin:0; background:#fff; border:1px solid #000; border-radius:12px; page-break-after:always; break-after:page; }
+    .shell, .shell:not(.has-results) { max-width:none; margin:0; padding:0; background:#fff; border:0; border-radius:0; }
+    .no-print, header, #drop, #status, .sync, .only-upload { display:none !important; }
+    .room { margin:0; background:#fff; border:1px solid #000; border-radius:12px; page-break-after:always; break-after:page; overflow:visible; }
     .room:last-of-type { page-break-after:auto; break-after:auto; }
     .room-head { background:#fff; color:#000; font-size:17pt; padding:12px 16px 10px; border-bottom:0; }
-    table { border-top:1px solid #000; }
+    table { border-top:1px solid #000; min-width:0; }
     th { background:#eef3fa; color:#000; font-size:9pt; border:1px solid #000; padding:9px 10px; }
     td { color:#000; font-size:10pt; border:1px solid #000; padding:9px 10px; }
     td.prod { color:#000; }
@@ -83,12 +107,20 @@
 </style>
 </head>
 <body>
-<div class="shell">
-  <header class="no-print">
+<div class="shell" id="shell">
+
+  <!-- Upload screen -->
+  <div class="up-head only-upload">
+    <span class="pill">MATERIALS</span>
+    <h1>Extract Materials</h1>
+    <p>Select your Excel file to generate the list.</p>
+  </div>
+
+  <!-- Results screen header -->
+  <header class="only-results no-print">
     <div>
       <span class="tag">MATERIALS DATA</span>
       <h1>Extracted Materials</h1>
-      <div class="sync"><span id="dbinfo"></span><button class="linkbtn" id="syncBtn">Sync now</button></div>
     </div>
     <div class="head-right">
       <button class="btn-dark" id="againBtn" hidden>Upload another estimate</button>
@@ -99,22 +131,40 @@
     </div>
   </header>
 
-  <div id="drop">
-    <strong>Drop the estimate Excel here, or click to browse</strong>
-    <p>.xlsx / .xls &mdash; processed inside your browser. Nothing is uploaded, saved, or written to any sheet.</p>
+  <div id="drop" class="only-upload">
+    <svg class="ficon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+    <span class="btn-choose">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Choose .xlsx File
+    </span>
     <input id="file" type="file" accept=".xlsx,.xls,.xlsm" hidden>
   </div>
+
   <div id="status"></div>
+
+  <div class="faq only-upload">
+    <details open>
+      <summary>Showing Multiple Panels</summary>
+      <div class="body">If a room has two end panels with different finishes, they will be displayed as separate panels.</div>
+    </details>
+    <details open>
+      <summary>Showing Error on Carcass Finish</summary>
+      <div class="body">End panel carcass finishes are automatically inherited from the cabinet carcass in the same room. For example, if you select Light brown cambric for the cabinet, the end panel's carcass will automatically match that finish.</div>
+    </details>
+  </div>
+
   <div id="result"></div>
   <input id="imgPick" type="file" accept="image/*" hidden>
+
+  <div class="sync no-print"><span id="dbinfo"></span><button class="linkbtn" id="syncBtn">Sync now</button></div>
 </div>
+<div class="no-print" style="text-align:center;color:#4b5060;font-size:11px;margin:10px 0 22px">Build 2026-11-03.3</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<div class="no-print" style="text-align:center;color:#4b5060;font-size:11px;margin:10px 0 22px">Build 2026-11-03.2</div>
-<script src="settings.js?v=20261103b"></script>
-<script src="config.js?v=20261103b"></script>
-<script src="extractor.js?v=20261103b"></script>
-<script src="sheet.js?v=20261103b"></script>
-<script src="app.js?v=20261103b"></script>
+<script src="settings.js?v=20261103c"></script>
+<script src="config.js?v=20261103c"></script>
+<script src="extractor.js?v=20261103c"></script>
+<script src="sheet.js?v=20261103c"></script>
+<script src="app.js?v=20261103c"></script>
 </body>
 </html>

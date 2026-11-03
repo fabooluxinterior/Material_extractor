@@ -1,7 +1,7 @@
 (function () {
   const $ = id => document.getElementById(id);
   const drop = $('drop'), fileInput = $('file'), statusEl = $('status'), resultEl = $('result'), dbInfo = $('dbinfo');
-  const printBtn = $('printBtn'), againBtn = $('againBtn'), imgPick = $('imgPick');
+  const printBtn = $('printBtn'), againBtn = $('againBtn'), imgPick = $('imgPick'), shell = $('shell');
 
   let lastMatrix = null;   // the uploaded estimate stays in memory only
   let lastResult = null;
@@ -95,7 +95,7 @@
 
   function render() {
     const has = !!(lastResult && lastResult.rooms.length);
-    drop.hidden = !!lastMatrix && !!lastResult;
+    shell.classList.toggle('has-results', !!lastMatrix && !!lastResult);
     printBtn.hidden = !has;
     againBtn.hidden = !lastMatrix;
     if (!lastResult) { resultEl.innerHTML = ''; return; }
@@ -205,7 +205,7 @@
   // ---------- wiring ----------
   drop.addEventListener('click', () => fileInput.click());
   againBtn.addEventListener('click', () => fileInput.click());
-  ['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); if (!drop.hidden) drop.classList.add('over'); }));
+  ['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
   ['dragleave', 'drop'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
   document.addEventListener('drop', e => { const f = e.dataTransfer && e.dataTransfer.files[0]; if (f && /\.(xlsx|xls|xlsm)$/i.test(f.name)) handleFile(f); });
   fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); fileInput.value = ''; });
