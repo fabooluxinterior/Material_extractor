@@ -50,7 +50,7 @@
     card(x, y, w, h, r, lw) { this.ops.push(`q 0 G ${n(lw)} w ${rr(x, y, w, h, r)} S Q`); }
     dotted(x, y, s, r) { this.ops.push(`q 0 G 1.1 w 1 J [0.01 2.8] 0 d ${rr(x, y, s, s, r)} S Q`); }
     image(k, x, y, s, r) { this.imgs.add(k); this.ops.push(`q ${rr(x, y, s, s, r)} W n ${n(s)} 0 0 ${n(s)} ${n(x)} ${n(Y(y + s))} cm /Im${k} Do Q`); }
-    text(s, x, baseY, size, bold, gray) { this.ops.push(`BT /${bold ? 'F2' : 'F1'} ${n(size)} Tf ${n(gray || 0)} g ${n(x)} ${n(Y(baseY))} Td (${esc(s)}) Tj ET`); }
+    text(s, x, baseY, size, bold, gray, color) { this.ops.push(`BT /${bold ? 'F2' : 'F1'} ${n(size)} Tf ${color ? rgb(color) + ' rg' : n(gray || 0) + ' g'} ${n(x)} ${n(Y(baseY))} Td (${esc(s)}) Tj ET`); }
   }
 
   // ---- word wrapping with mixed regular/bold segments ----
@@ -85,11 +85,11 @@
     return lines;
   }
 
-  function drawLines(pg, lines, x, top, size, lh, gray) {
+  function drawLines(pg, lines, x, top, size, lh, gray, color) {
     const sp = tw(' ', size, false);
     lines.forEach((ln, i) => {
       let cx = x; const base = top + i * lh + size * 0.84;
-      ln.forEach((tk, j) => { if (j) cx += sp; pg.text(tk.t, cx, base, size, tk.b, gray); cx += tw(tk.t, size, tk.b); });
+      ln.forEach((tk, j) => { if (j) cx += sp; pg.text(tk.t, cx, base, size, tk.b, gray, color); cx += tw(tk.t, size, tk.b); });
     });
   }
 
@@ -171,9 +171,13 @@
         blocks.push({ lines: wrap(segs, textW, 9), size: 9, lh: 11.8, gap: 0, gray: 0 });
         if (f.code) blocks.push({ lines: wrap([{ t: 'Code: ' + f.code, b: true }], textW, 7.6), size: 7.6, lh: 10, gap: 4, gray: 0 });
         if (f.edge) blocks.push({ lines: wrap([{ t: 'Edge Band: ' + f.edge }], textW, 7.6), size: 7.6, lh: 10, gap: 4, gray: 0.25 });
+        if (f.missing) {   // finish not found in the database: flag it in red
+          blocks[0].color = '#B3261E';
+          blocks.push({ lines: wrap([{ t: 'Not found in database', b: true }], textW, 7.6), size: 7.6, lh: 10, gap: 4, gray: 0, color: '#B3261E' });
+        }
       }
       const th = blocks.reduce((a, b) => a + b.gap + b.lines.length * b.lh, 0);
-      return { hasBox, blocks, f, h: Math.max(th, hasBox ? SW : 0) + 2 * PAD };
+      return { hasBox, blocks, f, th, textW, h: Math.max(th, hasBox ? SW : 0) + 2 * PAD };
     }
 
     function measure(r) {
@@ -185,8 +189,9 @@
     }
 
     function drawFinish(pg, L, x, y, width) {
+      if (L.f.missing) pg.fillRect(x + 3, y + 3, L.textW + 8, L.th + 8, '#FDE8E6');
       let ty = y + PAD;
-      L.blocks.forEach(b => { ty += b.gap; drawLines(pg, b.lines, x + PAD, ty, b.size, b.lh, b.gray); ty += b.lines.length * b.lh; });
+      L.blocks.forEach(b => { ty += b.gap; drawLines(pg, b.lines, x + PAD, ty, b.size, b.lh, b.gray, b.color); ty += b.lines.length * b.lh; });
       if (L.hasBox) {
         const bx = x + width - PAD - SW, by = y + PAD;
         if (L.f.img && idx.has(L.f.img)) pg.image(idx.get(L.f.img), bx, by, SW, 6);

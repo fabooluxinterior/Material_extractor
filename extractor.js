@@ -198,8 +198,9 @@ function getLaminateDetails(finish, dict) {
   const key = finish.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
   if (key.includes('fillmanually') || finish.trim() === 'Glass') return { lines: [finish.trim()], image: '' };
 
-  const res = { name: finish.trim(), type: '', code: '', edge: '', lines: [finish.trim()], image: '' };
+  const res = { name: finish.trim(), type: '', code: '', edge: '', lines: [finish.trim()], image: '', missing: false };
   const entry = dict[key];
+  if (!entry) res.missing = true;   // this finish name is not in the database sheet
   if (entry) {
     let baseName = finish.replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ').trim();
     res.name = baseName;
@@ -254,7 +255,19 @@ function processMatrix(dataMatrix, db) {
   const rooms = extractData(dataMatrix, colMap, db);
   applyIntelligentEndPanels(rooms);
   applySmartMerging(rooms);
-  return { projectName: extractProjectName(dataMatrix), rooms: buildReport(rooms, db.laminates) };
+  const report = buildReport(rooms, db.laminates);
+
+  // Finishes used in the estimate that do not exist in the database (listed once each, with their rooms).
+  const seen = new Map();
+  report.forEach(room => room.rows.forEach(r => [r.carcass, r.shutter].forEach(f => {
+    if (!f || !f.missing) return;
+    const k = f.name.toLowerCase();
+    if (!seen.has(k)) seen.set(k, { name: f.name, rooms: [] });
+    const e = seen.get(k);
+    if (!e.rooms.includes(room.name)) e.rooms.push(room.name);
+  })));
+
+  return { projectName: extractProjectName(dataMatrix), rooms: report, unmatched: [...seen.values()] };
 }
 
 if (typeof module !== 'undefined' && module.exports) module.exports = { processMatrix };

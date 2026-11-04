@@ -53,7 +53,9 @@
       lastResult = FB_extractor.processMatrix(lastMatrix, FB_sheet.getDatabase());
       render();
       const ms = Math.round(performance.now() - t0);
-      setStatus(reason === 'sheet' ? `Sheet changed: results updated automatically (${ms} ms)` : `Done in ${ms} ms`);
+      const um = lastResult.unmatched.length;
+      setStatus((reason === 'sheet' ? `Sheet changed: results updated automatically (${ms} ms)` : `Done in ${ms} ms`)
+        + (um ? ` · ⚠ ${um} finish${um === 1 ? '' : 'es'} not found in the database` : ''), !!um);
     } catch (e) {
       lastResult = null;
       render();
@@ -88,7 +90,8 @@
     let name = '';
     if (f.name) {
       const isFill = /fill manually/i.test(f.name);
-      name = `<div class="fin-name${isFill ? ' fill' : ''}">${esc(f.name)}${f.type ? ` <b>(${esc(f.type)})</b>` : ''}</div>`;
+      name = `<div class="fin-name${isFill ? ' fill' : ''}${f.missing ? ' miss' : ''}">${esc(f.name)}${f.type ? ` <b>(${esc(f.type)})</b>` : ''}</div>`;
+      if (f.missing) name += '<div class="miss-note">⚠ Not found in database</div>';
     }
     const code = f.code ? `<div class="fin-code">Code: ${esc(f.code)}</div>` : '';
     const edge = f.edge ? `<div class="fin-edge">Edge Band: ${esc(f.edge)}</div>` : '';
@@ -133,7 +136,11 @@
     if (!lastResult) { resultEl.innerHTML = ''; return; }
     if (!has) { resultEl.innerHTML = '<p style="color:var(--muted);margin-top:24px">No materials found in this estimate.</p>'; return; }
 
-    resultEl.innerHTML = lastResult.rooms.map((room, ri) => {
+    const um = lastResult.unmatched || [];
+    const banner = um.length ? `<div class="warn no-print"><b>⚠ ${um.length} finish${um.length === 1 ? '' : 'es'} in this estimate ${um.length === 1 ? 'is' : 'are'} not in the database</b>
+      <span>They are highlighted in red below. Add ${um.length === 1 ? 'it' : 'them'} to the Laminate_Data sheet and this page updates by itself within a minute.</span>
+      <ul>${um.map(u => `<li><b>${esc(u.name)}</b> <small>${esc(u.rooms.join(', '))}</small></li>`).join('')}</ul></div>` : '';
+    resultEl.innerHTML = banner + lastResult.rooms.map((room, ri) => {
       const isEd = editing.has(room.name);
       const rows = (manual[room.name] || []).map((r, i) => isEd ? manualEdit(r, i) : manualStatic(r)).join('');
       const gkeys = glassKeys(room);
@@ -246,7 +253,7 @@
   });
 
   // ---------- PDF: built in the page, always A4 landscape, downloaded directly ----------
-  const fin = f => ({ name: f.name, type: f.type, code: f.code, edge: f.edge, img: f.image, box: !!f.name });
+  const fin = f => ({ name: f.name, type: f.type, code: f.code, edge: f.edge, img: f.image, box: !!f.name, missing: !!f.missing });
   function pdfRooms() {
     return lastResult.rooms.map(room => {
       const gkeys = glassKeys(room);
